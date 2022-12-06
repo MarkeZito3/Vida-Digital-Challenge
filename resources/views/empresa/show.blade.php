@@ -28,7 +28,11 @@
                             <strong>Logo:</strong>
                             <img src="{{ asset('storage').'/'.$empresa->logo }}" width="100" height="100">
                         </div>
-                        <td>{{ $empresa->id}}</td>
+                        <br>
+                        <div class="float-right">
+                            <a class="btn btn-primary" href="{{ route('sucursales.index','empresa=')}}{{$empresa->id}}"> Sucursales</a>
+                        </div>
+                        <td>{{ $empresa->id }}</td>
 
                     </div>
                 </div>
@@ -36,3 +40,7 @@
         </div>
     </section>
 @endsection
+
+<div>
+    @yield('index-content')
+</div>

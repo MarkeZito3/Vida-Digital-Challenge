@@ -18,9 +18,19 @@
         </div>
         <div class="form-group">
             {{ Form::label('id_empresa_sucursales') }}
-            {{ Form::text('id_empresa_sucursales', $sucursale->id_empresa_sucursales, ['class' => 'form-control' . ($errors->has('id_empresa_sucursales') ? ' is-invalid' : ''), 'placeholder' => 'Id Empresa Sucursales']) }}
+            {{ 
+                Form::text(
+                    'id_empresa_sucursales',
+                    $id_empresa,
+                    [
+                        'class' => 'form-control' . ($errors->has('id_empresa_sucursales') ? ' is-invalid' : ''), 
+                        'placeholder' => 'Id Empresa Sucursales',
+                        'disabled'
+                    ]
+                )}}
             {!! $errors->first('id_empresa_sucursales', '<div class="invalid-feedback">:message</div>') !!}
         </div>
+        <br/>
 
     </div>
     <div class="box-footer mt20">

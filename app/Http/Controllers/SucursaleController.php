@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sucursale;
+use App\Models\Empresa; // importo el modelo de los datos de las empresas
 use Illuminate\Http\Request;
 
 /**
@@ -16,11 +17,14 @@ class SucursaleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $sucursales = Sucursale::paginate();
+        $empresa = Empresa::pluck('nombre','id','logo'); //agrego los datos de las empresas por las dudas xd
 
-        return view('sucursale.index', compact('sucursales'))
+        $id_empresa = $request->empresa;
+
+        return view('sucursale.index', compact('sucursales','empresa','id_empresa'))
             ->with('i', (request()->input('page', 1) - 1) * $sucursales->perPage());
     }
 
@@ -29,10 +33,15 @@ class SucursaleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         $sucursale = new Sucursale();
-        return view('sucursale.create', compact('sucursale'));
+        $empresa = Empresa::pluck('nombre','id','logo');
+        
+        $id_empresa = $request->empresa;
+        echo $id_empresa;
+
+        return view('sucursale.create', compact('sucursale','empresa','id_empresa'));
     }
 
     /**
@@ -60,8 +69,9 @@ class SucursaleController extends Controller
     public function show($id)
     {
         $sucursale = Sucursale::find($id);
+        $empresa = Empresa::pluck('nombre','id','logo');
 
-        return view('sucursale.show', compact('sucursale'));
+        return view('sucursale.show', compact('sucursale','empresa'));
     }
 
     /**
@@ -70,11 +80,15 @@ class SucursaleController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
         $sucursale = Sucursale::find($id);
+        $empresa = Empresa::pluck('nombre','id','logo');
 
-        return view('sucursale.edit', compact('sucursale'));
+        $id_empresa = $request->empresa;
+        echo $id_empresa;
+
+        return view('sucursale.edit', compact('sucursale','empresa','id_empresa'));
     }
 
     /**
@@ -87,6 +101,8 @@ class SucursaleController extends Controller
     public function update(Request $request, Sucursale $sucursale)
     {
         request()->validate(Sucursale::$rules);
+
+        $id_empresa = $request->empresa;
 
         $sucursale->update($request->all());
 
