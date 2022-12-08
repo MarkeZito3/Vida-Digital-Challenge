@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Empresa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage; // utilizo esto para poder borrar los archivos inútiles de storage
 
 /**
  * Class EmpresaController
@@ -72,6 +73,13 @@ class EmpresaController extends Controller
      */
     public function show($id)
     {
+
+        // esa ID, realmente existe?
+        $existe_id = Empresa::where('id','=',$id)->get();
+        if(empty($existe_id[0])){
+            return redirect()->route('empresas.index');
+        }
+
         $empresa = Empresa::find($id);
 
         return view('empresa.show', compact('empresa'));
@@ -97,14 +105,24 @@ class EmpresaController extends Controller
      * @param  Empresa $empresa
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Empresa $empresa)
+    public function update(Request $request, $id)
     {
-        request()->validate(Empresa::$rules);
+        // request()->validate(Empresa::$rules);
+        $datos = request()->except(['_token', '_method']);
 
-        $empresa->update($request->all());
+        if($request->hasFile('logo')){
+            $empresa = Empresa::findOrFail($id);
+            Storage::delete('public/'.$empresa->logo);
+            $datos['logo'] = $request->file('logo')->store('uploads','public');
+        }
 
+        Empresa::where('id','=',$id)->update($datos);
+
+        $empresa = Empresa::findOrFail($id);
+
+        // return view('empresa.edit', compact('empresa'))->with('success', 'Empresa updated successfully');
         return redirect()->route('empresas.index')
-            ->with('success', 'Empresa updated successfully');
+            ->with('success', 'se actualizó la empresa exitosamente');
     }
 
     /**

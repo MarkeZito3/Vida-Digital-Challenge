@@ -14,7 +14,7 @@
                             <span class="card-title">Show Sucursale</span>
                         </div>
                         <div class="float-right">
-                            <a class="btn btn-primary" href="{{ route('sucursales.index') }}"> Back</a>
+                            <a class="btn btn-primary" href="{{ route('sucursales.index') }}?empresa={{$sucursale->id_empresa_sucursales}}"> Back</a>
                         </div>
                     </div>
 

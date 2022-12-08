@@ -38,12 +38,10 @@
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
                                     <tr>
-                                        <th>No</th>
                                         
 										<th>Direccion</th>
 										<th>Localidad</th>
 										<th>Telefono</th>
-										<th>Id Empresa Sucursales</th>
 
                                         <th></th>
                                     </tr>
@@ -53,12 +51,10 @@
                                     @if ($sucursale->id_empresa_sucursales == $id_empresa)
                                         <!-- {{ $empresa }} -->
                                         <tr>
-                                            <td>{{ ++$i }}</td>
                                             
 											<td>{{ $sucursale->direccion }}</td>
 											<td>{{ $sucursale->localidad }}</td>
 											<td>{{ $sucursale->telefono }}</td>
-											<td>{{ $sucursale->id_empresa_sucursales }}</td>
 
                                             <td>
                                                 <form action="{{ route('sucursales.destroy',$sucursale->id) }}" method="POST">

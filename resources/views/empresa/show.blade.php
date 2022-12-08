@@ -24,6 +24,7 @@
                             <strong>Nombre:</strong>
                             {{ $empresa->nombre }}
                         </div>
+                        <br>
                         <div class="form-group">
                             <strong>Logo:</strong>
                             <img src="{{ asset('storage').'/'.$empresa->logo }}" width="100" height="100">
@@ -32,7 +33,6 @@
                         <div class="float-right">
                             <a class="btn btn-primary" href="{{ route('sucursales.index','empresa=')}}{{$empresa->id}}"> Sucursales</a>
                         </div>
-                        <td>{{ $empresa->id }}</td>
 
                     </div>
                 </div>

@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 Auth::routes();
 
 Route::resource('empresas', App\Http\Controllers\EmpresaController::class);
 Route::resource('sucursales', App\Http\Controllers\SucursaleController::class);
-Route::resource('empleados', App\Http\Controllers\EmpleadoController::class);
+Route::resource('empleados', App\Http\Controllers\EmpleadoController::class)->middleware('auth');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

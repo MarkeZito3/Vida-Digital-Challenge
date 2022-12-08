@@ -34,7 +34,6 @@
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
                                     <tr>
-                                        <th>No</th>
                                         
 										<th>Nombre</th>
 										<th>Logo</th>
@@ -45,7 +44,6 @@
                                 <tbody>
                                     @foreach ($empresas as $empresa)
                                         <tr>
-                                            <td>{{ ++$i }}</td>
                                             
 											<td>{{ $empresa->nombre }}</td>
 											<td><img src="{{ asset('storage').'/'.$empresa->logo }}" width="100" height="100"></td>
@@ -56,7 +54,7 @@
                                                     <a class="btn btn-sm btn-success" href="{{ route('empresas.edit',$empresa->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Delete</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que quieres borrar?')"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                                 </form>
                                             </td>
                                         </tr>

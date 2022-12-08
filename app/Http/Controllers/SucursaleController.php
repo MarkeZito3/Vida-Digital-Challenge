@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Sucursale;
 use App\Models\Empresa; // importo el modelo de los datos de las empresas
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\RedirectResponse;
 
 /**
  * Class SucursaleController
@@ -23,8 +25,24 @@ class SucursaleController extends Controller
         $empresa = Empresa::pluck('nombre','id','logo'); //agrego los datos de las empresas por las dudas xd
 
         $id_empresa = $request->empresa;
+        
+        // esto es un verificador de que se está en el link sucursales?empresa=nº, ya que si no lo están lo redireccione a empresas
+        $url = $_SERVER["HTTP_HOST"] . "/sucursales?empresa=" . $id_empresa;
+        $url_2 = $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
 
-        return view('sucursale.index', compact('sucursales','empresa','id_empresa'))
+        if ($url_2 == $url) {
+            $redirect = 'sucursale.index';
+            
+            // esa ID, realmente existe?
+            $existe_id = Empresa::where('id','=',$id_empresa)->get();
+            if(empty($existe_id[0])){
+                return redirect()->route('empresas.index');
+            }
+        } else {
+            return redirect()->route('empresas.index');
+        }
+
+        return view($redirect, compact('sucursales','empresa','id_empresa'))
             ->with('i', (request()->input('page', 1) - 1) * $sucursales->perPage());
     }
 
@@ -36,10 +54,16 @@ class SucursaleController extends Controller
     public function create(Request $request)
     {
         $sucursale = new Sucursale();
-        $empresa = Empresa::pluck('nombre','id','logo');
+        $empresa = Empresa::pluck('nombre','id');
         
         $id_empresa = $request->empresa;
-        echo $id_empresa;
+        $empresa = [$id_empresa=>$empresa[$id_empresa]];
+
+        // $prueba = DB::table('empresas')->where('id','=',$id_empresa)->get();
+        // foreach($prueba as $pru){
+        //     // echo $pru->nombre;
+        //     $id = $pru->id;
+        // }
 
         return view('sucursale.create', compact('sucursale','empresa','id_empresa'));
     }
@@ -56,7 +80,7 @@ class SucursaleController extends Controller
 
         $sucursale = Sucursale::create($request->all());
 
-        return redirect()->route('sucursales.index')
+        return redirect()->route('empresas.index')
             ->with('success', 'Sucursale created successfully.');
     }
 
@@ -83,10 +107,10 @@ class SucursaleController extends Controller
     public function edit($id, Request $request)
     {
         $sucursale = Sucursale::find($id);
-        $empresa = Empresa::pluck('nombre','id','logo');
-
+        $empresa = Empresa::pluck('nombre','id');
+        
         $id_empresa = $request->empresa;
-        echo $id_empresa;
+        $empresa = [$id_empresa=>$empresa[$id_empresa]];
 
         return view('sucursale.edit', compact('sucursale','empresa','id_empresa'));
     }
@@ -106,7 +130,7 @@ class SucursaleController extends Controller
 
         $sucursale->update($request->all());
 
-        return redirect()->route('sucursales.index')
+        return redirect()->route('empresas.index')
             ->with('success', 'Sucursale updated successfully');
     }
 

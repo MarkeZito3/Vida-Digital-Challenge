@@ -74,6 +74,8 @@ class EmpleadoController extends Controller
     {
         $empleado = Empleado::find($id);
 
+        request()->validate(Empleado::$rules);
+
         return view('empleado.edit', compact('empleado'));
     }
 
