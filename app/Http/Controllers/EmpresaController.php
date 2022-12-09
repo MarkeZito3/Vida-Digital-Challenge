@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage; // utilizo esto para poder borrar los archivos inútiles de storage
+use Illuminate\Support\Facades\DB;
+use App\Models\Manager;
+use Illuminate\Support\Facades\Auth; // utilizo esto para poder autenticar el usuario
+
 
 /**
  * Class EmpresaController
@@ -19,9 +23,21 @@ class EmpresaController extends Controller
      */
     public function index()
     {
+        // validador para que un usuario no pueda modificar una empresa si no le pertenece UwU y a su vez si está logged
+        $lista_managers = array();
+        if (Auth::check()) {
+            $prueba = Manager::select('id_empresa')->where('id_user','=',Auth::user()->id)->get();
+            // $prueba = Manager::pluck('id_empresa','id_user');
+            // echo $prueba;
+            foreach ($prueba as $pru) {
+                // echo $pru['id_empresa'];
+                array_push($lista_managers,$pru['id_empresa']);
+            }
+        }
+
         $empresas = Empresa::paginate();
 
-        return view('empresa.index', compact('empresas'))
+        return view('empresa.index', compact('empresas','lista_managers'))
             ->with('i', (request()->input('page', 1) - 1) * $empresas->perPage());
     }
 
@@ -32,7 +48,13 @@ class EmpresaController extends Controller
      */
     public function create()
     {
+        
+        // autenticación del login
+        if (!Auth::check()){
+            return redirect( __('login'));
+        }
         $empresa = new Empresa();
+
         return view('empresa.create', compact('empresa'));
     }
 
@@ -50,19 +72,16 @@ class EmpresaController extends Controller
             $datos['logo'] = $request->file('logo')->store('uploads','public');
         }
 
-        // $datos["created_at"] = date();
-        // $datos["updated_at"] = $request->date();
-        
-
         Empresa::create($datos);
         
-        // request()->validate(Empresa::$rules);
-        // $empresa = Empresa::create($request->all());
-
+        $empresa_id = DB::table('empresas')->where('logo','=',$datos['logo'])->where('nombre','=',$datos['nombre'])->get();
+        $usuario_id = Auth::user()->id;
+        $manager_create = array($usuario_id,$empresa_id[0]->id);
+        // Manager::create($manager_create);
+        
 
         return redirect()->route('empresas.index')
-            ->with('success', 'Empresa creada exitosamente.');
-        // return response()->json($datos);
+            ->with('success', 'Empresa creada exitosamente. '.$usuario_id . ' | ' . $empresa_id[0]->id);
     }
 
     /**
@@ -132,6 +151,8 @@ class EmpresaController extends Controller
      */
     public function destroy($id)
     {
+        $empresa_logo = Empresa::findOrFail($id);
+        Storage::delete('public/'.$empresa_logo->logo);
         $empresa = Empresa::find($id)->delete();
 
         return redirect()->route('empresas.index')

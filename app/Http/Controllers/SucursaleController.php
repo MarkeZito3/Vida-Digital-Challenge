@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sucursale;
+use App\Models\Manager;
 use App\Models\Empresa; // importo el modelo de los datos de las empresas
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +30,6 @@ class SucursaleController extends Controller
         // esto es un verificador de que se está en el link sucursales?empresa=nº, ya que si no lo están lo redireccione a empresas
         $url = $_SERVER["HTTP_HOST"] . "/sucursales?empresa=" . $id_empresa;
         $url_2 = $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
-
         if ($url_2 == $url) {
             $redirect = 'sucursale.index';
             
@@ -42,7 +42,14 @@ class SucursaleController extends Controller
             return redirect()->route('empresas.index');
         }
 
-        return view($redirect, compact('sucursales','empresa','id_empresa'))
+        // validador para que un usuario no pueda modificar una empresa si no le pertenece UwU
+        $lista_managers = array();
+        $prueba = Manager::pluck('id_empresa');
+        foreach ($prueba as $pru) {
+            array_push($lista_managers,$pru);
+        }
+
+        return view($redirect, compact('sucursales','empresa','id_empresa','lista_managers'))
             ->with('i', (request()->input('page', 1) - 1) * $sucursales->perPage());
     }
 
