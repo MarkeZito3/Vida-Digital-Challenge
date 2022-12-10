@@ -14,6 +14,9 @@
                 <div class="card card-default">
                     <div class="card-header">
                         <span class="card-title">Update Sucursale</span>
+                        <div class="float-right">
+                            <a class="btn btn-primary" href="{{ route('sucursales.index') }}?empresa={{$sucursale->id_empresa_sucursales}}"> Back</a>
+                        </div>
                     </div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('sucursales.update', $sucursale->id) }}"  role="form" enctype="multipart/form-data">

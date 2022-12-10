@@ -37,8 +37,8 @@
             {!! $errors->first('cargos', '<div class="invalid-feedback">:message</div>') !!}
         </div>
         <div class="form-group">
-            {{ Form::label('id_sucursales_empleados') }}
-            {{ Form::text('id_sucursales_empleados', $empleado->id_sucursales_empleados, ['class' => 'form-control' . ($errors->has('id_sucursales_empleados') ? ' is-invalid' : ''), 'placeholder' => 'Id Sucursales Empleados']) }}
+            {{ Form::label('dirección de sucursal') }}
+            {{ Form::select('id_sucursales_empleados', $empleado_select, $empleado->id_sucursales_empleados, ['class' => 'form-control' . ($errors->has('id_sucursales_empleados') ? ' is-invalid' : ''), 'placeholder' => 'Id Sucursales Empleados']) }}
             {!! $errors->first('id_sucursales_empleados', '<div class="invalid-feedback">:message</div>') !!}
         </div>
 

@@ -36,7 +36,14 @@
                             <strong>Id Empresa Sucursales:</strong>
                             {{ $sucursale->id_empresa_sucursales }}
                         </div>
-
+                        @if (Auth::check())
+                        @if($lista_usuario == Auth::user()->id)
+                            <br>
+                            <div class="float-right">
+                                <a class="btn btn-primary" href="{{ route('empleados.index') }}?sucursal={{$sucursale->id}}"> Empleados</a>
+                            </div>
+                        @endif
+                        @endif
                     </div>
                 </div>
             </div>

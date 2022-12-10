@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Empresa;
+use App\Models\Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage; // utilizo esto para poder borrar los archivos inútiles de storage
 use Illuminate\Support\Facades\DB;
-use App\Models\Manager;
 use Illuminate\Support\Facades\Auth; // utilizo esto para poder autenticar el usuario
 
 
@@ -27,10 +27,7 @@ class EmpresaController extends Controller
         $lista_managers = array();
         if (Auth::check()) {
             $prueba = Manager::select('id_empresa')->where('id_user','=',Auth::user()->id)->get();
-            // $prueba = Manager::pluck('id_empresa','id_user');
-            // echo $prueba;
             foreach ($prueba as $pru) {
-                // echo $pru['id_empresa'];
                 array_push($lista_managers,$pru['id_empresa']);
             }
         }
@@ -78,10 +75,11 @@ class EmpresaController extends Controller
         $usuario_id = Auth::user()->id;
         $manager_create = array($usuario_id,$empresa_id[0]->id);
         // Manager::create($manager_create);
+        DB::insert('insert into managers (id_user,id_empresa) values (?, ?)', [$usuario_id, $empresa_id[0]->id]);
         
 
         return redirect()->route('empresas.index')
-            ->with('success', 'Empresa creada exitosamente. '.$usuario_id . ' | ' . $empresa_id[0]->id);
+            ->with('success', 'Empresa creada exitosamente. ');
     }
 
     /**
@@ -112,6 +110,20 @@ class EmpresaController extends Controller
      */
     public function edit($id)
     {
+
+        // validador para que un usuario no pueda modificar una empresa si no le pertenece UwU y a su vez si está logged
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        $lista_managers = array();
+        $prueba = Manager::select('id_empresa')->where('id_user','=',Auth::user()->id)->get();
+        foreach ($prueba as $pru) {
+            array_push($lista_managers,$pru['id_empresa']);
+        }
+        if (!in_array($id,$lista_managers)) {
+            return redirect()->route('empresas.index');
+        }
+
         $empresa = Empresa::find($id);
 
         return view('empresa.edit', compact('empresa'));

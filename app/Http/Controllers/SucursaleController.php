@@ -6,8 +6,10 @@ use App\Models\Sucursale;
 use App\Models\Manager;
 use App\Models\Empresa; // importo el modelo de los datos de las empresas
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth; // utilizo esto para poder autenticar el usuario
+
 
 /**
  * Class SucursaleController
@@ -23,7 +25,7 @@ class SucursaleController extends Controller
     public function index(Request $request)
     {
         $sucursales = Sucursale::paginate();
-        $empresa = Empresa::pluck('nombre','id','logo'); //agrego los datos de las empresas por las dudas xd
+        $empresa = Empresa::pluck('nombre','id'); //esta variable me sirve para los botones en el index :)
 
         $id_empresa = $request->empresa;
         
@@ -36,7 +38,7 @@ class SucursaleController extends Controller
             // esa ID, realmente existe?
             $existe_id = Empresa::where('id','=',$id_empresa)->get();
             if(empty($existe_id[0])){
-                return redirect()->route('empresas.index');
+                return redirect()->route('empresas.index'); // si la empresa no existe te redirecciona al index de empresas
             }
         } else {
             return redirect()->route('empresas.index');
@@ -44,10 +46,14 @@ class SucursaleController extends Controller
 
         // validador para que un usuario no pueda modificar una empresa si no le pertenece UwU
         $lista_managers = array();
-        $prueba = Manager::pluck('id_empresa');
-        foreach ($prueba as $pru) {
-            array_push($lista_managers,$pru);
+        if(Auth::check()){
+            $prueba = Manager::select('id_empresa')->where('id_user','=',Auth::user()->id)->get();
+            foreach ($prueba as $pru) {
+                array_push($lista_managers,$pru['id_empresa']);
+            }
         }
+
+        
 
         return view($redirect, compact('sucursales','empresa','id_empresa','lista_managers'))
             ->with('i', (request()->input('page', 1) - 1) * $sucursales->perPage());
@@ -60,17 +66,30 @@ class SucursaleController extends Controller
      */
     public function create(Request $request)
     {
+
+        // verifica si está logged in
+        if (!Auth::check()){
+            return redirect(('login'));
+        }
+
+        // validador para que un usuario no pueda modificar una empresa si no le pertenece UwU y a su vez si está logged
+
+        $lista_managers = array();
+        $prueba = Manager::select('id_empresa')->where('id_user','=',Auth::user()->id)->get();
+        foreach ($prueba as $pru) {
+            array_push($lista_managers,$pru['id_empresa']);
+        }
+        if (!in_array($request->empresa,$lista_managers)) {
+            return redirect()->route('empresas.index');
+        }
+
         $sucursale = new Sucursale();
         $empresa = Empresa::pluck('nombre','id');
         
         $id_empresa = $request->empresa;
         $empresa = [$id_empresa=>$empresa[$id_empresa]];
 
-        // $prueba = DB::table('empresas')->where('id','=',$id_empresa)->get();
-        // foreach($prueba as $pru){
-        //     // echo $pru->nombre;
-        //     $id = $pru->id;
-        // }
+
 
         return view('sucursale.create', compact('sucursale','empresa','id_empresa'));
     }
@@ -99,10 +118,27 @@ class SucursaleController extends Controller
      */
     public function show($id)
     {
-        $sucursale = Sucursale::find($id);
-        $empresa = Empresa::pluck('nombre','id','logo');
 
-        return view('sucursale.show', compact('sucursale','empresa'));
+        // $query = DB::select('select id_user, id_empresa 
+        //                     from sucursales inner join managers on
+        //                     sucursales.id_empresa_sucursales = managers.id_empresa
+        //                     where sucursales = ?', [$id]); 
+        $query = DB::table('sucursales')->select('id_user','id_empresa')
+                    ->join('managers', 'sucursales.id_empresa_sucursales','=','managers.id_empresa')
+                    ->where('sucursales.id', '=', $id)->get();
+
+        $lista = array();
+
+        foreach ($query as $row){
+            foreach ($row as $row_2){
+                // echo $row_2;
+                array_push($lista,$row_2);
+            }
+        }
+        $lista_usuario = $lista[0];
+        $sucursale = Sucursale::find($id);
+
+        return view('sucursale.show', compact('sucursale','lista_usuario'));
     }
 
     /**
@@ -113,6 +149,21 @@ class SucursaleController extends Controller
      */
     public function edit($id, Request $request)
     {
+
+        // verifica si está logged in
+        if (!Auth::check()){
+            return redirect(('login'));
+        }
+        //verifica si la sucursal le pertenece UwU
+        $lista_managers = array();
+        $prueba = Manager::select('id_empresa')->where('id_user','=',Auth::user()->id)->get();
+        foreach ($prueba as $pru) {
+            array_push($lista_managers,$pru['id_empresa']);
+        }
+        if (!in_array($request->empresa,$lista_managers)){
+            return redirect()->route('empresas.index');
+        } 
+
         $sucursale = Sucursale::find($id);
         $empresa = Empresa::pluck('nombre','id');
         

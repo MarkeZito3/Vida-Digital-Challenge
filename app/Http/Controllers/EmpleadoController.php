@@ -3,7 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Empleado;
+use App\Models\Sucursale;
+use App\Models\Manager;
+use App\Models\Empresa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth; // utilizo esto para poder autenticar el usuario
+
+
 
 /**
  * Class EmpleadoController
@@ -16,11 +23,47 @@ class EmpleadoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+
         $empleados = Empleado::paginate();
 
-        return view('empleado.index', compact('empleados'))
+        $id_sucursal = $request->sucursal;
+
+        // esto es un verificador de que se está en el link empleados?sucursal=nº, ya que si no lo están lo redireccione a empresas
+        $url = $_SERVER["HTTP_HOST"] . "/empleados?sucursal=" . $id_sucursal;
+        $url_2 = $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+        if ($url_2 == $url) {
+            $redirect = 'empleado.index';
+            
+            // esa ID, realmente existe?
+            $existe_id = Sucursale::where('id','=',$id_sucursal)->get();
+            if(empty($existe_id[0])){
+                return redirect()->route('sucursales.index'); // si la empresa no existe te redirecciona al index de empresas
+            }
+        } else {
+            return redirect()->route('sucursales.index');
+        }
+
+        // validador para que un usuario no pueda modificar una empresa si no le pertenece UwU
+
+        $id_user = Auth::user()->id;
+        $es_igual = false;
+        $lista_managers = array();
+        $prueba = Sucursale::select('id_empresa_sucursales')->where('id','=', $id_sucursal)->get();
+        $manager = Manager::select('id_empresa')->where('id_user','=', $id_user)->get();;
+        foreach ($prueba as $pru) {
+            foreach($manager as $man){
+                if($pru['id_empresa_sucursales'] == $man['id_empresa']){
+                    $es_igual = true;
+                }
+            }
+        }
+        if (!$es_igual){
+            return redirect()->route('empresas.index');
+        }
+
+        return view('empleado.index', compact('empleados','id_sucursal','lista_managers'))
             ->with('i', (request()->input('page', 1) - 1) * $empleados->perPage());
     }
 
@@ -29,10 +72,15 @@ class EmpleadoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
+
+        $empleado_select = Sucursale::pluck('direccion','id');
+        $id_sucursal = $request->sucursal;
+        $empleado_select = [$id_sucursal=>$empleado_select[$id_sucursal]];
+
         $empleado = new Empleado();
-        return view('empleado.create', compact('empleado'));
+        return view('empleado.create', compact('empleado','id_sucursal','empleado_select'));
     }
 
     /**
@@ -59,6 +107,38 @@ class EmpleadoController extends Controller
      */
     public function show($id)
     {
+        // Está logeado?
+        if(!Auth::check()){
+            return redirect(('login'));
+        }
+
+        // el empleado existe?
+        $existe_id = Empleado::where('id','=',$id)->get();
+        if(empty($existe_id[0])){
+            return redirect()->route('empresas.index'); // si la empresa no existe te redirecciona al index de empresas
+            echo "algo XD";
+        }
+
+        // validador para que un usuario no pueda modificar una empresa si no le pertenece UwU
+        $id_user = Auth::user()->id;
+        $es_igual = false;
+        $lista_managers = array();
+        $id_sucursal = Empleado::pluck('id_sucursales_empleados','id');
+        // echo $id_sucursal[$id];
+        $prueba = Sucursale::select('id_empresa_sucursales')->where('id','=', $id_sucursal[$id])->get();
+        $manager = Manager::select('id_empresa')->where('id_user','=', $id_user)->get();;
+        foreach ($prueba as $pru) {
+            foreach($manager as $man){
+                if($pru['id_empresa_sucursales'] == $man['id_empresa']){
+                    $es_igual = true;
+                }
+            }
+        }
+        if (!$es_igual){
+            return redirect()->route('empresas.index');
+            // echo "no es igual";
+        }
+
         $empleado = Empleado::find($id);
 
         return view('empleado.show', compact('empleado'));
@@ -70,9 +150,11 @@ class EmpleadoController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
-        $empleado = Empleado::find($id);
+        // $empleado_select = Sucursale::pluck('direccion','id');
+        // $id_sucursal = $request->sucursal;
+        // $empleado_select = [$id_sucursal=>$empleado_select[$id_sucursal]];
 
         request()->validate(Empleado::$rules);
 

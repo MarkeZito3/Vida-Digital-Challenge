@@ -17,7 +17,7 @@
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('empleados.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                <a href="{{ route('empleados.create') }}?sucursal={{ $id_sucursal }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
                                   {{ __('Create New') }}
                                 </a>
                               </div>
@@ -50,6 +50,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($empleados as $empleado)
+                                    @if ($empleado->id_sucursales_empleados == $id_sucursal)
                                         <tr>
                                             <td>{{ ++$i }}</td>
                                             
@@ -72,6 +73,7 @@
                                                 </form>
                                             </td>
                                         </tr>
+                                    @endif
                                     @endforeach
                                 </tbody>
                             </table>

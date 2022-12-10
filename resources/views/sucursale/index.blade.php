@@ -66,7 +66,7 @@
                                                         <a class="btn btn-sm btn-success" href="{{ route('sucursales.edit',$sucursale->id) }}/?empresa={{$id_empresa}}"><i class="fa fa-fw fa-edit"></i> Edit</a>
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Delete</button>
+                                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que quieres borrar?')"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                                     @endif
                                                 </form>
                                             </td>
