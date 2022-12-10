@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+<link rel="shortcut icon" href="{{ asset('ico/favicon.ico') }}">
 @section('template_title')
     {{ $empresa->name ?? 'Show Empresa' }}
 @endsection

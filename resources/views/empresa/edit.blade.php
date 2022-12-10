@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('template_title')
     Editar Empresa
 @endsection
