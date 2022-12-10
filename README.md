@@ -1,66 +1,63 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><a href="https://vidadigital.com.ar/" target="_blank"><img src="https://raw.githubusercontent.com/MarkeZito3/Vida-Digital-Challenge/master/favicon.png" width="400" alt="Vida Digital Logo"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+## Challenge:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Vida Digital presenta un reto en donde se debe realizar una Aplicación en Laravel la cual
+cumpla con los siguientes requerimientos:
+- Migración en Base de Datos MySql de las siguientes entidades: Empresa, Sucursal,
+Empleado con sus respectivas relaciones.
+- CRUD’s (Empresas, Sucursales, Empleados).
+- Bootstrap
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Aplicación
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Versión: v0.1.0-alpha
 
-## Learning Laravel
+Esta aplicación es un gestor de empleados para empresas, su funcionalidad es que las empresas se registran, agreguen de dónde son y dónde están sus sucursales y a los empleados de las ellas. 
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Las funcionalidades son un tanto limitadas teniendo en cuenta que una aplicación creada en tan solo 5 días. La misma cuenta con responsive para celulares y el estilo fue enteramente **Bootstrap**, nada de css propio. 
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Instalación:
+1. Clonar el repositorio
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+        git clone https://github.com/MarkeZito3/Vida-Digital-Challenge.git
 
-## Laravel Sponsors
+2. Instalar todas las dependencias
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+    - Instalación de **composer** (esto puede tardar un tiempo):
 
-### Premium Partners
+            composer install
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+    - Instalación del **package.json**:
 
-## Contributing
+            npm install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Crear el archivo .env
 
-## Code of Conduct
+    Este archivo es necesario para realizar las conexiones con la base de datos.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    Para crearlo basta con renombrar el archivo `.env.example` como `.env`.
 
-## Security Vulnerabilities
+    Una vez dentro, realizar la conexión a gusto.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+4. Generar una clave
 
-## License
+        php artisan key::generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. Migrar y sembrar la base de datos
+
+        php artisan migrate
+
+6. Ejecutar los servidores locales de php y node
+
+    Correr el servidor del CRUD:
+
+        php artisan serve
+
+    En una consola aparte ejecutar:
+
+        npm run dev
+
+Y listo! solo faltaría entrar en `http://localhost:8000/` o `http://127.0.0.1:8000/`
+

@@ -1,4 +1,6 @@
 {
+    "name": "vida_digital_challenge",
+    "version": "0.1.0",
     "private": true,
     "scripts": {
         "dev": "vite",
